@@ -27,7 +27,7 @@ Four conditions have to be met before the **Unlock AI Prompt** button will do an
 | 1 | **Problem** | What are you building or fixing? Can't be blank. |
 | 2 | **My attempt** | What you actually tried — code, commands, reasoning. Minimum 40 characters, so a one-line shrug won't pass. |
 | 3 | **Hypothesis** | What's failing, and why you think it's failing. Can't be blank. |
-| 4 | **Confirmation** | A checkbox: "I attempted this myself before asking AI." |
+| 4 | **Confirmation** | A checkbox: "I attempted this myself before asking AI" |
 
 Every condition is checked live, with a running `[x]` / `[ ]` readout so it's always obvious what's still blocking you — never a silently disabled button.
 
