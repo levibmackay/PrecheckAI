@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>precheck</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Mono:wght@700&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  :root {
+    --bg: #0b0d0f;
+    --panel: #14171a;
+    --border: #2a2f34;
+    --text: #d8dee3;
+    --text-dim: #6b7480;
+    --locked: #5b7a99;
+    --unlocked: #e0a458;
+    --warn: #b85450;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  body {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 400;
+    min-height: 100vh;
+  }
+
+  .page {
+    display: flex;
+    justify-content: center;
+    padding: 48px 16px;
+  }
+
+  .terminal {
+    width: 100%;
+    max-width: 720px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+  }
+
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    border-radius: 0;
+  }
+
+  .dot.locked {
+    background: var(--locked);
+  }
+
+  .dot.unlocked {
+    background: var(--unlocked);
+  }
+
+  .dot.warn {
+    background: var(--warn);
+  }
+
+  .titlebar-label {
+    margin-left: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .content {
+    padding: 28px 28px 32px;
+  }
+
+  h1 {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    margin: 0 0 4px;
+    color: var(--text);
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin: 0 0 28px;
+  }
+
+  .section-label {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin: 0 0 12px;
+    text-transform: uppercase;
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  .field-label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  label.field-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  label.field-label .prefix {
+    color: var(--unlocked);
+    margin-right: 2px;
+  }
+
+  .counter {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 500;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--warn);
+  }
+
+  .counter.met {
+    color: var(--unlocked);
+  }
+
+  input[type="text"],
+  textarea {
+    width: 100%;
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    padding: 10px 12px;
+    outline: none;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.5;
+  }
+
+  input[type="text"]:focus,
+  textarea:focus {
+    outline: 2px solid var(--unlocked);
+    outline-offset: 1px;
+    border-color: var(--unlocked);
+  }
+
+  input[type="text"]:hover,
+  textarea:hover {
+    border-color: var(--text-dim);
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--unlocked);
+    background: var(--panel);
+    border-radius: 0;
+  }
+
+  input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--unlocked);
+    outline-offset: 2px;
+  }
+
+  .checkbox-row label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .checklist {
+    margin: 22px 0;
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    background: var(--bg);
+  }
+
+  .checklist-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.9;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .checklist-mark {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    width: 40px;
+    flex-shrink: 0;
+  }
+
+  .checklist-row.pass .checklist-mark {
+    color: var(--unlocked);
+  }
+
+  .checklist-row.fail .checklist-mark {
+    color: var(--warn);
+  }
+
+  .checklist-row.pass .checklist-text {
+    color: var(--text);
+  }
+
+  .checklist-row.fail .checklist-text {
+    color: var(--text-dim);
+  }
+
+  .gate-status {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin: 22px 0;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gate-status {
+      transition: none;
+    }
+  }
+
+  .gate-status.locked {
+    color: var(--locked);
+    border-color: var(--locked);
+  }
+
+  .gate-status.unlocked {
+    color: var(--unlocked);
+    border-color: var(--unlocked);
+  }
+
+  .lock-glyph {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    line-height: 1.15;
+    white-space: pre;
+    flex-shrink: 0;
+  }
+
+  .gate-status-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .gate-status-word {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+
+  .gate-status-sub {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin: 22px 0;
+  }
+
+  button {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 11px 18px;
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    cursor: pointer;
+  }
+
+  button:hover:not(:disabled) {
+    border-color: var(--text);
+  }
+
+  button:focus-visible {
+    outline: 2px solid var(--unlocked);
+    outline-offset: 2px;
+  }
+
+  button.primary {
+    border-color: var(--unlocked);
+    color: var(--unlocked);
+  }
+
+  button.primary:disabled {
+    color: var(--text-dim);
+    border-color: var(--border);
+    cursor: not-allowed;
+  }
+
+  button.copy {
+    border-color: var(--locked);
+    color: var(--locked);
+  }
+
+  .prompt-panel {
+    margin: 22px 0;
+  }
+
+  .prompt-output {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 16px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    color: var(--unlocked);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.6;
+    margin: 0 0 12px;
+  }
+
+  .history-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 32px 0 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+  }
+
+  .streak-line {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--unlocked);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .history-count {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .history-list {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .history-empty {
+    padding: 18px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .history-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+
+  .history-row:last-child {
+    border-bottom: none;
+  }
+
+  .history-time {
+    font-variant-numeric: tabular-nums;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    width: 118px;
+  }
+
+  .history-problem {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+  }
+
+  .history-pass {
+    flex-shrink: 0;
+    color: var(--unlocked);
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script
+    src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+    integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+    integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://unpkg.com/@babel/standalone@8.0.4/babel.min.js"
+    integrity="sha384-bdF7m0Y1IFKt9Q6xC8X9qkXn0OBriQWKyWwZKYsN05zF6P/g9OakjjL0G2Sd4pB4"
+    crossorigin="anonymous"
+  ></script>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const STORAGE_KEY = "precheck.sessions";
+    const MIN_ATTEMPT_LENGTH = 40;
+
+    function loadSessions() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveSessions(sessions) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+    }
+
+    function localDateKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatTimestamp(iso) {
+      const d = new Date(iso);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      const hh = String(d.getHours()).padStart(2, "0");
+      const mm = String(d.getMinutes()).padStart(2, "0");
+      return `${y}-${m}-${day} ${hh}:${mm}`;
+    }
+
+    function truncate(text, max) {
+      if (!text) return "";
+      return text.length > max ? text.slice(0, max) + "..." : text;
+    }
+
+    function computeStreak(sessions) {
+      const dateSet = new Set(
+        sessions.map((s) => localDateKey(new Date(s.timestamp)))
+      );
+      let streak = 0;
+      const cursor = new Date();
+      while (true) {
+        const key = localDateKey(cursor);
+        if (dateSet.has(key)) {
+          streak += 1;
+          cursor.setDate(cursor.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function buildPrompt(problem, attempt, hypothesis) {
+      return `I'm working on: ${problem}
+
+Here's what I've tried:
+${attempt}
+
+What I think is going wrong: ${hypothesis}
+
+Please don't give me the full solution — review my approach, point out
+what's likely wrong, and give me a hint toward the fix, not the fix itself.`;
+    }
+
+    const LOCK_LOCKED = ` ┏━━━┓
+ ┃   ┃
+┏┻━━━┻┓
+┃  ●  ┃
+┗━━━━━┛`;
+
+    const LOCK_UNLOCKED = `┏━━━┓
+┃   ┃
+┃   ┏━━━━━┓
+┗━━━┫  ●  ┃
+    ┗━━━━━┛`;
+
+    function App() {
+      const [problem, setProblem] = useState("");
+      const [attempt, setAttempt] = useState("");
+      const [hypothesis, setHypothesis] = useState("");
+      const [confirmed, setConfirmed] = useState(false);
+
+      const [gateUnlocked, setGateUnlocked] = useState(false);
+      const [generatedPrompt, setGeneratedPrompt] = useState("");
+      const [copied, setCopied] = useState(false);
+      const copyTimeoutRef = useRef(null);
+
+      const [sessions, setSessions] = useState(loadSessions);
+
+      const problemValid = problem.trim().length > 0;
+      const attemptTrimmedLength = attempt.trim().length;
+      const attemptValid = attemptTrimmedLength >= MIN_ATTEMPT_LENGTH;
+      const hypothesisValid = hypothesis.trim().length > 0;
+      const confirmedValid = confirmed === true;
+
+      const allValid =
+        problemValid && attemptValid && hypothesisValid && confirmedValid;
+
+      function handleUnlock() {
+        if (!allValid) return;
+
+        const prompt = buildPrompt(
+          problem.trim(),
+          attempt.trim(),
+          hypothesis.trim()
+        );
+
+        const record = {
+          id: crypto.randomUUID(),
+          timestamp: new Date().toISOString(),
+          problem: problem.trim(),
+          attempt: attempt.trim(),
+          hypothesis: hypothesis.trim(),
+          confirmed: true,
+          passed: true,
+          promptGenerated: prompt,
+        };
+
+        const nextSessions = [...sessions, record];
+        saveSessions(nextSessions);
+
+        setSessions(nextSessions);
+        setGeneratedPrompt(prompt);
+        setGateUnlocked(true);
+      }
+
+      function handleCopy() {
+        navigator.clipboard.writeText(generatedPrompt).then(() => {
+          setCopied(true);
+          if (copyTimeoutRef.current) {
+            clearTimeout(copyTimeoutRef.current);
+          }
+          copyTimeoutRef.current = setTimeout(() => {
+            setCopied(false);
+          }, 1500);
+        });
+      }
+
+      function handleNewSession() {
+        setProblem("");
+        setAttempt("");
+        setHypothesis("");
+        setConfirmed(false);
+        setGateUnlocked(false);
+        setGeneratedPrompt("");
+        setCopied(false);
+      }
+
+      const streak = computeStreak(sessions);
+      const sortedSessions = [...sessions].sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+
+      return (
+        <div className="page">
+          <div className="terminal">
+            <div className="titlebar">
+              <span
+                className={"dot " + (gateUnlocked ? "unlocked" : "locked")}
+              ></span>
+              <span className="dot warn"></span>
+              <span className="dot locked"></span>
+              <span className="titlebar-label">precheck.sh</span>
+            </div>
+
+            <div className="content">
+              <h1>PRE-AI CHECKLIST</h1>
+              <p className="subtitle">
+                attempt it yourself first. then unlock the prompt.
+              </p>
+
+              <fieldset
+                disabled={gateUnlocked}
+                style={{ border: "none", padding: 0, margin: 0 }}
+              >
+                <div className="field">
+                  <div className="field-label-row">
+                    <label className="field-label" htmlFor="problem">
+                      <span className="prefix">$</span>problem:
+                    </label>
+                  </div>
+                  <input
+                    id="problem"
+                    type="text"
+                    value={problem}
+                    onChange={(e) => setProblem(e.target.value)}
+                    placeholder="what are you trying to do?"
+                  />
+                </div>
+
+                <div className="field">
+                  <div className="field-label-row">
+                    <label className="field-label" htmlFor="attempt">
+                      <span className="prefix">$</span>attempt:
+                    </label>
+                    <span
+                      className={
+                        "counter " + (attemptValid ? "met" : "")
+                      }
+                    >
+                      {attemptTrimmedLength}/{MIN_ATTEMPT_LENGTH}
+                    </span>
+                  </div>
+                  <textarea
+                    id="attempt"
+                    value={attempt}
+                    onChange={(e) => setAttempt(e.target.value)}
+                    placeholder="what did you try? what did you read, run, test?"
+                  ></textarea>
+                </div>
+
+                <div className="field">
+                  <div className="field-label-row">
+                    <label className="field-label" htmlFor="hypothesis">
+                      <span className="prefix">$</span>hypothesis:
+                    </label>
+                  </div>
+                  <input
+                    id="hypothesis"
+                    type="text"
+                    value={hypothesis}
+                    onChange={(e) => setHypothesis(e.target.value)}
+                    placeholder="what do you think is failing, and why?"
+                  />
+                </div>
+
+                <div className="checkbox-row">
+                  <input
+                    id="confirmed"
+                    type="checkbox"
+                    checked={confirmed}
+                    onChange={(e) => setConfirmed(e.target.checked)}
+                  />
+                  <label htmlFor="confirmed">
+                    I attempted this myself before asking AI
+                  </label>
+                </div>
+              </fieldset>
+
+              <div className="checklist">
+                <p className="section-label">gate conditions</p>
+                <div
+                  className={
+                    "checklist-row " + (problemValid ? "pass" : "fail")
+                  }
+                >
+                  <span className="checklist-mark">
+                    {problemValid ? "[x]" : "[ ]"}
+                  </span>
+                  <span className="checklist-text">problem described</span>
+                </div>
+                <div
+                  className={
+                    "checklist-row " + (attemptValid ? "pass" : "fail")
+                  }
+                >
+                  <span className="checklist-mark">
+                    {attemptValid ? "[x]" : "[ ]"}
+                  </span>
+                  <span className="checklist-text">
+                    attempt is at least {MIN_ATTEMPT_LENGTH} chars (
+                    {attemptTrimmedLength}/{MIN_ATTEMPT_LENGTH})
+                  </span>
+                </div>
+                <div
+                  className={
+                    "checklist-row " + (hypothesisValid ? "pass" : "fail")
+                  }
+                >
+                  <span className="checklist-mark">
+                    {hypothesisValid ? "[x]" : "[ ]"}
+                  </span>
+                  <span className="checklist-text">hypothesis described</span>
+                </div>
+                <div
+                  className={
+                    "checklist-row " + (confirmedValid ? "pass" : "fail")
+                  }
+                >
+                  <span className="checklist-mark">
+                    {confirmedValid ? "[x]" : "[ ]"}
+                  </span>
+                  <span className="checklist-text">
+                    confirmed self-attempt
+                  </span>
+                </div>
+              </div>
+
+              <div
+                className={
+                  "gate-status " + (gateUnlocked ? "unlocked" : "locked")
+                }
+              >
+                <span className="lock-glyph">
+                  {gateUnlocked ? LOCK_UNLOCKED : LOCK_LOCKED}
+                </span>
+                <span className="gate-status-text">
+                  <span className="gate-status-word">
+                    {gateUnlocked ? "UNLOCKED" : "LOCKED"}
+                  </span>
+                  <span className="gate-status-sub">
+                    {gateUnlocked
+                      ? "prompt generated below"
+                      : "complete all gate conditions to unlock"}
+                  </span>
+                </span>
+              </div>
+
+              <div className="actions">
+                {!gateUnlocked && (
+                  <button
+                    className="primary"
+                    disabled={!allValid}
+                    onClick={handleUnlock}
+                  >
+                    Unlock AI Prompt
+                  </button>
+                )}
+                {gateUnlocked && (
+                  <button onClick={handleNewSession}>New session</button>
+                )}
+              </div>
+
+              {gateUnlocked && (
+                <div className="prompt-panel">
+                  <p className="section-label">generated prompt</p>
+                  <pre className="prompt-output">{generatedPrompt}</pre>
+                  <button className="copy" onClick={handleCopy}>
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              )}
+
+              <div className="history-header">
+                <span className="streak-line">
+                  STREAK: {streak} DAY{streak === 1 ? "" : "S"}
+                </span>
+                <span className="history-count">
+                  {sessions.length} session
+                  {sessions.length === 1 ? "" : "s"} logged
+                </span>
+              </div>
+
+              <div className="history-list">
+                {sortedSessions.length === 0 && (
+                  <div className="history-empty">
+                    no sessions logged yet.
+                  </div>
+                )}
+                {sortedSessions.map((s) => (
+                  <div className="history-row" key={s.id}>
+                    <span className="history-time">
+                      {formatTimestamp(s.timestamp)}
+                    </span>
+                    <span className="history-problem">
+                      {truncate(s.problem, 60)}
+                    </span>
+                    <span className="history-pass">[PASS]</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
