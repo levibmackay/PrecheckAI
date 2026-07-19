@@ -12,6 +12,15 @@ No backend. No build step. No dependencies to install. One HTML file, running en
 
 ![PreCheck unlocked, showing the generated prompt and session history](docs/screenshot-unlocked.png)
 
+## Key features
+
+- **A four-condition gate** — problem, attempt (40-char minimum), hypothesis, and a self-attestation checkbox, all validated live with a visible `[x]`/`[ ]` checklist.
+- **Prompt generation on unlock** — your problem, attempt, and hypothesis are assembled into a ready-to-copy prompt that explicitly asks for a hint, not a solution.
+- **One-click copy to clipboard** for pasting straight into whichever AI assistant you use.
+- **Persistent session history** — every unlocked session is saved to `localStorage`, with a newest-first log of timestamp, problem, and pass status.
+- **Day-streak tracking**, computed locally from your session dates.
+- **Zero backend, zero build step** — a single HTML file that runs entirely in the browser.
+
 ## Why this exists
 
 It's easy to ask an AI assistant for help the moment something breaks, skip the struggle that actually builds understanding, and walk away having learned nothing about the bug. PreCheck is a deliberate speed bump: a short, honest checklist that forces you to articulate the problem, show your work, and form a hypothesis *before* you're allowed to outsource the thinking.
