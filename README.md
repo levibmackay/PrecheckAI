@@ -127,7 +127,8 @@ PrecheckAI/
 ├── index.html      # the entire application
 ├── docs/           # README screenshots
 ├── LICENSE
-└── README.md
+├── README.md
+└── .gitignore
 ```
 
 ## Roadmap
