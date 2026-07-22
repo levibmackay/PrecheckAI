@@ -144,4 +144,4 @@ MIT — see [LICENSE](LICENSE).
 _Last reviewed: 2026-07-20 19:33 MDT_
 
 ---
-**Last updated:** 2026-07-21
+_Last updated: July 22, 2026_
