@@ -72,7 +72,7 @@ There's no server and no account. The log lives in your browser, for you.
 No install, no build, no package manager.
 
 ```bash
-git clone https://github.com/levibmackay/PrecheckAI.git
+git clone https://github.com/levimackay/PrecheckAI.git
 cd PrecheckAI
 open index.html      # macOS
 # or just double-click index.html
